@@ -108,7 +108,12 @@
   .s-5      { background: #d4edda; color: #2d6a4f; border: 1.5px solid #7dd3b0; }
   .s-5plus  { background: #ffcccc; color: #c0392b; border: 1.5px solid #f5a97f; }
 
-  .updated { font-size: 10px; color: #bbb; }
+  .box-input {
+    width: 48px; height: 28px; border: 1.5px solid #ddd; border-radius: 6px;
+    text-align: center; font-size: 13px; font-weight: 700; color: #2c2c2c;
+    background: #fff; outline: none;
+  }
+  .box-input:focus { border-color: #888; }
 
   .empty { padding: 40px; text-align: center; color: #bbb; font-size: 14px; }
 
@@ -163,7 +168,7 @@
 
 <div id="table-wrap">
   <table>
-    <thead><tr><th>色番号</th><th>列</th><th>在庫</th><th>更新日</th></tr></thead>
+    <thead><tr><th>色番号</th><th>箱番号</th><th>列</th><th>在庫</th><th>更新日</th></tr></thead>
     <tbody id="tbody"></tbody>
   </table>
 </div>
@@ -250,6 +255,14 @@ function save() {
 function getStatus(color) { return inventory[color]?.status || "×"; }
 function getDate(color)   { return inventory[color]?.date || ""; }
 
+function getBox(color)  { return inventory[color]?.box || ""; }
+
+function updateBox(color, value) {
+  if (!inventory[color]) inventory[color] = {};
+  inventory[color].box = value;
+  save();
+}
+
 function toggle(color) {
   const cur = getStatus(color);
   const idx = STATUSES.indexOf(cur);
@@ -334,8 +347,10 @@ function rowHTML(item) {
   const s   = getStatus(item.color);
   const cls = STATUS_CLASS[s];
   const dt  = getDate(item.color);
+  const box = getBox(item.color);
   return `<tr>
     <td class="color-num">${item.color}</td>
+    <td><input class="box-input" type="number" min="1" value="${box}" placeholder="-" onchange="updateBox('${item.color}', this.value)" /></td>
     <td class="col-num">${item.col}</td>
     <td><button class="status-btn ${cls}" onclick="toggle('${item.color}')">${s}</button></td>
     <td class="updated">${dt}</td>
